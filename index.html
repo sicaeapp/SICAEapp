@@ -469,6 +469,53 @@ body.nav-hidden #navbar {
         padding: 12px 0;
     }
 }
+/* Compensar altura del menú fijo en escritorio */
+body {
+    padding-top: 80px; /* Altura aproximada del menú en escritorio */
+}
+
+/* En móviles, el menú no es fijo por defecto (solo al hacer scroll) */
+@media (max-width: 768px) {
+    body {
+        padding-top: 0;
+    }
+    
+    /* Cuando el menú está visible en móvil, no necesita padding */
+    body.nav-hidden {
+        padding-top: 0;
+    }
+}
+/* Menú fijo SOLO en móviles cuando está visible */
+#navbar {
+    background-color: var(--white);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+/* En escritorio: posición estática (normal) */
+@media (min-width: 769px) {
+    #navbar {
+        position: static; /* No es fijo en escritorio */
+        margin-bottom: 2rem;
+    }
+}
+
+/* En móviles: posición fija */
+@media (max-width: 768px) {
+    #navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    /* Ocultar al hacer scroll */
+    body.nav-hidden #navbar {
+        transform: translateY(-100%);
+        box-shadow: none;
+    }
+}
     </style>
 </head>
 <body>
@@ -666,7 +713,7 @@ body.nav-hidden #navbar {
                 }
             });
         });
-    </script>
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menu-toggle');
