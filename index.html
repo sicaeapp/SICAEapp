@@ -667,36 +667,39 @@ body.nav-hidden #navbar {
             });
         });
 <script>
-    // Toggle menú en móvil
-    document.getElementById('menu-toggle').addEventListener('click', function() {
-        document.getElementById('nav-menu').classList.toggle('active');
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
 
-    // Ocultar menú al hacer scroll (solo en móvil)
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Cerrar menú al hacer clic en un enlace
+    if (navMenu) {
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+    }
+
+    // Ocultar menú al hacer scroll (solo móvil)
     let lastScrollTop = 0;
-    const navbar = document.getElementById('navbar');
-
     window.addEventListener('scroll', function() {
-        if (window.innerWidth <= 768) { // Solo en móviles
+        if (window.innerWidth <= 768) {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
             if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Scroll hacia abajo → ocultar
                 document.body.classList.add('nav-hidden');
             } else {
-                // Scroll hacia arriba → mostrar
                 document.body.classList.remove('nav-hidden');
             }
             lastScrollTop = scrollTop;
         }
     });
-
-    // Cerrar menú al hacer clic en un enlace (móvil)
-    document.querySelectorAll('#nav-menu a').forEach(link => {
-        link.addEventListener('click', () => {
-            document.getElementById('nav-menu').classList.remove('active');
-        });
-    });
-    </script>
+});
+</script>
 </body>
 </html>
