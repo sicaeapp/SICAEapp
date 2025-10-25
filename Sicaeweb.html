@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SICAE - Sistema Inteligente de Control de Asistencias Estudiantil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #0d47a1, #01579b);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        
+        header p {
+            opacity: 0.95;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            background-color: #f0f4f8;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e6ed;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid #bbdefb;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #0d47a1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(to right, #0d47a1, #01579b);
+            color: white;
+            border: none;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 8px rgba(13, 71, 161, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(13, 71, 161, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .records-section h2 {
+            margin-bottom: 20px;
+            color: #01579b;
+            font-size: 1.9rem;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+        
+        .records-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .record {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px;
+            margin-bottom: 18px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #0d47a1;
+            transition: transform 0.25s;
+        }
+        
+        .record:hover {
+            transform: translateX(6px);
+        }
+        
+        .record.in-progress {
+            border-left-color: #ff9800;
+            background-color: #fff8e1;
+        }
+        
+        .record.completed {
+            border-left-color: #2e7d32;
+            background-color: #e8f5e9;
+        }
+        
+        .record-info {
+            flex: 1;
+        }
+        
+        .record-name {
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #01579b;
+        }
+        
+        .record-dates {
+            display: flex;
+            gap: 25px;
+            font-size: 1.05rem;
+            color: #37474f;
+        }
+        
+        .record-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn-exit {
+            background: linear-gradient(to right, #ff9800, #f57c00);
+            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+        }
+        
+        .btn-exit:hover {
+            box-shadow: 0 6px 12px rgba(255, 152, 0, 0.4);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(to right, #f44336, #d32f2f);
+            box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+        }
+        
+        .btn-delete:hover {
+            box-shadow: 0 6px 12px rgba(244, 67, 54, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #546e7a;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 18px 28px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+            transform: translateX(120%);
+            transition: transform 0.4s ease-out;
+            z-index: 1000;
+            max-width: 350px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(to right, #2e7d32, #1b5e20);
+        }
+        
+        .notification.error {
+            background: linear-gradient(to right, #c62828, #b71c1c);
+        }
+        
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .record-dates {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            header p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SICAE</h1>
+            <p>Sistema Inteligente de Control de Asistencias Estudiantil</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <input type="text" id="studentName" placeholder="Ingresa tu nombre completo">
+                    <button id="btnRegister">Registrar Entrada</button>
+                </div>
+            </div>
+            
+            <div class="records-section">
+                <h2>Registros de Asistencia</h2>
+                <div class="records-container" id="recordsContainer">
+                    <!-- Los registros se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const studentNameInput = document.getElementById('studentName');
+            const btnRegister = document.getElementById('btnRegister');
+            const recordsContainer = document.getElementById('recordsContainer');
+            const notification = document.getElementById('notification');
+            
+            // Cargar registros desde localStorage al iniciar
+            let records = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
+            
+            // Función para mostrar notificaciones
+            function showNotification(message, type = 'success') {
+                if (!notification) return;
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 4000);
+            }
+            
+            // Formatear fecha y hora
+            function formatDateTime(date) {
+                return new Date(date).toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            
+            // Guardar registros en localStorage
+            function saveRecords() {
+                localStorage.setItem('attendanceRecords', JSON.stringify(records));
+                renderRecords();
+            }
+            
+            // Renderizar registros en la página
+            function renderRecords() {
+                if (!recordsContainer) return;
+                
+                if (records.length === 0) {
+                    recordsContainer.innerHTML = '<div class="empty-state">No hay registros de asistencia aún</div>';
+                    return;
+                }
+                
+                recordsContainer.innerHTML = '';
+                
+                // Ordenar: incompletos primero, luego por entrada descendente
+                const sortedRecords = [...records].sort((a, b) => {
+                    if (a.exitTime && !b.exitTime) return 1;
+                    if (!a.exitTime && b.exitTime) return -1;
+                    return new Date(b.entryTime) - new Date(a.entryTime);
+                });
+                
+                sortedRecords.forEach(record => {
+                    const recordElement = document.createElement('div');
+                    recordElement.className = `record ${record.exitTime ? 'completed' : 'in-progress'}`;
+                    
+                    const entryTimeFormatted = formatDateTime(record.entryTime);
+                    const exitTimeFormatted = record.exitTime ? formatDateTime(record.exitTime) : 'Aún no ha salido';
+                    
+                    recordElement.innerHTML = `
+                        <div class="record-info">
+                            <div class="record-name">${record.name}</div>
+                            <div class="record-dates">
+                                <div><strong>Entrada:</strong> ${entryTimeFormatted}</div>
+                                <div><strong>Salida:</strong> ${exitTimeFormatted}</div>
+                            </div>
+                        </div>
+                        <div class="record-actions">
+                            ${!record.exitTime ? 
+                                `<button class="btn-exit" onclick="registerExit('${record.id}')">Registrar Salida</button>` : 
+                                `<button class="btn-delete" onclick="deleteRecord('${record.id}')">Eliminar</button>`
+                            }
+                        </div>
+                    `;
+                    
+                    recordsContainer.appendChild(recordElement);
+                });
+            }
+            
+            // Registrar entrada
+            function registerEntry() {
+                const name = studentNameInput?.value.trim();
+                if (!name) {
+                    showNotification('Por favor ingresa tu nombre', 'error');
+                    return;
+                }
+                
+                // Verificar si ya hay un registro activo (sin salida) para este nombre
+                const existingRecord = records.find(record => 
+                    record.name.toLowerCase() === name.toLowerCase() && !record.exitTime
+                );
+                
+                if (existingRecord) {
+                    showNotification('Ya tienes un registro de entrada activo. Registra tu salida primero.', 'error');
+                    return;
+                }
+                
+                const newRecord = {
+                    id: Date.now().toString(),
+                    name: name,
+                    entryTime: new Date().toISOString(),
+                    exitTime: null
+                };
+                
+                records.push(newRecord);
+                saveRecords();
+                if (studentNameInput) studentNameInput.value = '';
+                showNotification(`¡Bienvenido/a, ${name}! Tu entrada ha sido registrada, se ha enviado una notificación a su responsable.`);
+            }
+            
+            // Registrar salida por ID
+            function registerExit(id) {
+                const record = records.find(r => r.id === id);
+                if (!record) return;
+                
+                record.exitTime = new Date().toISOString();
+                saveRecords();
+                showNotification(`¡Hasta luego, ${record.name}! Tu salida ha sido registrada, se ha enviado una notificación a su responsable.`);
+            }
+            
+            // Eliminar registro por ID
+            function deleteRecord(id) {
+                const index = records.findIndex(r => r.id === id);
+                if (index === -1) return;
+                
+                const name = records[index].name;
+                records.splice(index, 1);
+                saveRecords();
+                showNotification(`Registro de ${name} eliminado correctamente.`);
+            }
+            
+            // Hacer funciones accesibles desde HTML (onclick)
+            window.registerExit = registerExit;
+            window.deleteRecord = deleteRecord;
+            
+            // Asignar eventos
+            if (btnRegister) {
+                btnRegister.addEventListener('click', registerEntry);
+            } else {
+                console.error('Botón de registro no encontrado. Verifica que el ID sea correcto.');
+            }
+            
+            if (studentNameInput) {
+                studentNameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') registerEntry();
+                });
+            }
+            
+            // Inicializar la página
+            renderRecords();
+        });
+    </script>
+</body>
+</html>
